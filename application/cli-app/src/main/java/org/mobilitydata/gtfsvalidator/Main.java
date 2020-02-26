@@ -20,6 +20,9 @@ import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mobilitydata.gtfsvalidator.config.DefaultConfig;
+import org.mobilitydata.gtfsvalidator.usecase.ParseRowForFile;
+import org.mobilitydata.gtfsvalidator.usecase.port.GtfsSpecRepository;
+import org.mobilitydata.gtfsvalidator.usecase.port.RawFileRepository;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -107,10 +110,13 @@ public class Main {
             config.unzipInputArchive(zipInputPath, config.cleanOrCreatePath(zipExtractTargetPath).execute()).execute();
 
             //TODO: we will loop through all files in the archive. MVP is for stops.txt
-            config.validateHeadersForFile("stops.txt").execute();
-            config.validateAllRowLengthForFile("stops.txt").execute();
+            config.validateHeadersForFile("stop_times.txt").execute();
+            config.validateAllRowLengthForFile("stop_times.txt").execute();
 
-            config.validateGtfsTypes().execute(config.parseAllRowForFile("stops.txt").execute());
+            ParseRowForFile parseRowForFile = config.parseRowForFile("stop_times.txt");
+            while (parseRowForFile.hasNext()) {
+                config.validateGtfsTypes().execute(parseRowForFile.getNext());
+            }
 
             logger.info("validation repo content:" + config.getValidationResult());
 

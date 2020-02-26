@@ -80,6 +80,15 @@ public class DefaultConfig {
         );
     }
 
+    public ParseRowForFile parseRowForFile(String filename) {
+        return new ParseRowForFile(
+                rawFileRepo.findByName(filename).orElse(RawFileInfo.builder().build()),
+                rawFileRepo,
+                specRepo,
+                resultRepo
+        );
+    }
+
     public ValidateGtfsTypes validateGtfsTypes() {
         return new ValidateGtfsTypes(
                 specRepo,

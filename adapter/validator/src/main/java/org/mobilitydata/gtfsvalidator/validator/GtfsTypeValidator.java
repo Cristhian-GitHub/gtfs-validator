@@ -57,120 +57,120 @@ public class GtfsTypeValidator implements GtfsSpecRepository.ParsedEntityTypeVal
 
             Object value = toValidate.get(columnSpecProto.getName());
 
-            if ((!(value instanceof String) && value != null) ||
-                    value != null && !Strings.isNullOrEmpty((String) value)) {
-                switch (columnSpecProto.getType().getType()) {
-                    case FLOAT_STD:
-                        if (!FloatValidator.getInstance().isInRange(
-                                (Float) value,
-                                columnSpecProto.getFloatmin(),
-                                columnSpecProto.getFloatmax())) {
-
-                            toReturn.add(new FloatFieldValueOutOfRangeNotice(
-                                    toValidate.getRawFileInfo().getFilename(),
-                                    columnSpecProto.getName(),
-                                    toValidate.getEntityId(),
-                                    columnSpecProto.getFloatmin(),
-                                    columnSpecProto.getFloatmax(),
-                                    (Float) value
-                            ));
-                        }
-                        break;
-                    case INT_DEC:
-                        if (!IntegerValidator.getInstance().isInRange(
-                                (Integer) value,
-                                columnSpecProto.getIntmin(),
-                                columnSpecProto.getIntmax())) {
-
-                            toReturn.add(new IntegerFieldValueOutOfRangeNotice(
-                                    toValidate.getRawFileInfo().getFilename(),
-                                    columnSpecProto.getName(),
-                                    toValidate.getEntityId(),
-                                    columnSpecProto.getIntmin(),
-                                    columnSpecProto.getIntmax(),
-                                    (Integer) value
-                            ));
-                        }
-                        break;
-                    case INT_HEX:   //Color
-                        if (!new RegexValidator(columnSpecProto.getMatchregexp()).isValid((String) value)) {
-                            toReturn.add(new InvalidColorNotice(
-                                    toValidate.getRawFileInfo().getFilename(),
-                                    columnSpecProto.getName(),
-                                    toValidate.getEntityId(),
-                                    (String) value
-                            ));
-                        }
-                        break;
-                    case INPUT_TYPE_UNSPECIFIED: //String is default
-                    case STRING:
-                        if (columnSpecProto.getName().contains(URL_FIELD_NAME_IDENTIFIER)) {
-                            if (!new UrlValidator(VALID_URL_SCHEMES).isValid((String) value)) {
-                                toReturn.add(new InvalidUrlNotice(
-                                        toValidate.getRawFileInfo().getFilename(),
-                                        columnSpecProto.getName(),
-                                        toValidate.getEntityId(),
-                                        (String) value
-                                ));
-                            }
-
-                        } else if (columnSpecProto.getName().contains(TIMEZONE_FIELD_NAME_IDENTIFIER)) {
-                            // Uses IANA timezone database shipped with JDK
-                            // to update without updating JDK see https://www.oracle.com/technetwork/java/javase/tzupdater-readme-136440.html
-                            //noinspection RedundantCast
-                            if (!ZoneId.getAvailableZoneIds().contains((String) value)) {
-                                toReturn.add(new InvalidTimezoneNotice(
-                                        toValidate.getRawFileInfo().getFilename(),
-                                        columnSpecProto.getName(),
-                                        toValidate.getEntityId(),
-                                        (String) value
-                                ));
-                            }
-
-                        } else if (columnSpecProto.getName().contains(ID_FIELD_NAME_IDENTIFIER)) {
-                            String stringValue = (String) value;
-                            int charCount = stringValue.length();
-                            for (int i = 0; i < charCount; ++i) {
-                                if (!isPrintableAscii(stringValue.charAt(i))) {
-                                    toReturn.add(new NonAsciiOrNonPrintableCharNotice(
-                                            toValidate.getRawFileInfo().getFilename(),
-                                            columnSpecProto.getName(),
-                                            toValidate.getEntityId(),
-                                            stringValue
-                                    ));
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    case INT:
-                    case FLOAT:
-                    case FLOAT_E6:
-                    case FLOAT_E7:
-                    case DATE:
-                    case DATE_YYYYMMDD:
-                    case TIME:
-                    case TIME_SECONDS_SINCE_MIDNIGHT:
-                    case TIME_AUTODETECT:
-                    case TIME_HHCMM:
-                    case TIME_HHMMSS:
-                    case TIME_HHCMMCSS:
-                        toReturn.add(new UnsupportedGtfsTypeNotice(
-                                toValidate.getRawFileInfo().getFilename(),
-                                columnSpecProto.getName(),
-                                toValidate.getEntityId()
-                        ));
-                        break;
-                }
-            } else {    //value is null or an empty string
-                if (columnSpecProto.getValueRequired()) {
-                    toReturn.add(new MissingRequiredValueNotice(
-                            toValidate.getRawFileInfo().getFilename(),
-                            columnSpecProto.getName(),
-                            toValidate.getEntityId()
-                    ));
-                }
-            }
+//            if ((!(value instanceof String) && value != null) ||
+//                    value != null && !Strings.isNullOrEmpty((String) value)) {
+//                switch (columnSpecProto.getType().getType()) {
+//                    case FLOAT_STD:
+//                        if (!FloatValidator.getInstance().isInRange(
+//                                (Float) value,
+//                                columnSpecProto.getFloatmin(),
+//                                columnSpecProto.getFloatmax())) {
+//
+//                            toReturn.add(new FloatFieldValueOutOfRangeNotice(
+//                                    toValidate.getRawFileInfo().getFilename(),
+//                                    columnSpecProto.getName(),
+//                                    toValidate.getEntityId(),
+//                                    columnSpecProto.getFloatmin(),
+//                                    columnSpecProto.getFloatmax(),
+//                                    (Float) value
+//                            ));
+//                        }
+//                        break;
+//                    case INT_DEC:
+//                        if (!IntegerValidator.getInstance().isInRange(
+//                                (Integer) value,
+//                                columnSpecProto.getIntmin(),
+//                                columnSpecProto.getIntmax())) {
+//
+//                            toReturn.add(new IntegerFieldValueOutOfRangeNotice(
+//                                    toValidate.getRawFileInfo().getFilename(),
+//                                    columnSpecProto.getName(),
+//                                    toValidate.getEntityId(),
+//                                    columnSpecProto.getIntmin(),
+//                                    columnSpecProto.getIntmax(),
+//                                    (Integer) value
+//                            ));
+//                        }
+//                        break;
+//                    case INT_HEX:   //Color
+//                        if (!new RegexValidator(columnSpecProto.getMatchregexp()).isValid((String) value)) {
+//                            toReturn.add(new InvalidColorNotice(
+//                                    toValidate.getRawFileInfo().getFilename(),
+//                                    columnSpecProto.getName(),
+//                                    toValidate.getEntityId(),
+//                                    (String) value
+//                            ));
+//                        }
+//                        break;
+//                    case INPUT_TYPE_UNSPECIFIED: //String is default
+//                    case STRING:
+//                        if (columnSpecProto.getName().contains(URL_FIELD_NAME_IDENTIFIER)) {
+//                            if (!new UrlValidator(VALID_URL_SCHEMES).isValid((String) value)) {
+//                                toReturn.add(new InvalidUrlNotice(
+//                                        toValidate.getRawFileInfo().getFilename(),
+//                                        columnSpecProto.getName(),
+//                                        toValidate.getEntityId(),
+//                                        (String) value
+//                                ));
+//                            }
+//
+//                        } else if (columnSpecProto.getName().contains(TIMEZONE_FIELD_NAME_IDENTIFIER)) {
+//                            // Uses IANA timezone database shipped with JDK
+//                            // to update without updating JDK see https://www.oracle.com/technetwork/java/javase/tzupdater-readme-136440.html
+//                            //noinspection RedundantCast
+//                            if (!ZoneId.getAvailableZoneIds().contains((String) value)) {
+//                                toReturn.add(new InvalidTimezoneNotice(
+//                                        toValidate.getRawFileInfo().getFilename(),
+//                                        columnSpecProto.getName(),
+//                                        toValidate.getEntityId(),
+//                                        (String) value
+//                                ));
+//                            }
+//
+//                        } else if (columnSpecProto.getName().contains(ID_FIELD_NAME_IDENTIFIER)) {
+//                            String stringValue = (String) value;
+//                            int charCount = stringValue.length();
+//                            for (int i = 0; i < charCount; ++i) {
+//                                if (!isPrintableAscii(stringValue.charAt(i))) {
+//                                    toReturn.add(new NonAsciiOrNonPrintableCharNotice(
+//                                            toValidate.getRawFileInfo().getFilename(),
+//                                            columnSpecProto.getName(),
+//                                            toValidate.getEntityId(),
+//                                            stringValue
+//                                    ));
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                        break;
+//                    case INT:
+//                    case FLOAT:
+//                    case FLOAT_E6:
+//                    case FLOAT_E7:
+//                    case DATE:
+//                    case DATE_YYYYMMDD:
+//                    case TIME:
+//                    case TIME_SECONDS_SINCE_MIDNIGHT:
+//                    case TIME_AUTODETECT:
+//                    case TIME_HHCMM:
+//                    case TIME_HHMMSS:
+//                    case TIME_HHCMMCSS:
+//                        toReturn.add(new UnsupportedGtfsTypeNotice(
+//                                toValidate.getRawFileInfo().getFilename(),
+//                                columnSpecProto.getName(),
+//                                toValidate.getEntityId()
+//                        ));
+//                        break;
+//                }
+//            } else {    //value is null or an empty string
+//                if (columnSpecProto.getValueRequired()) {
+//                    toReturn.add(new MissingRequiredValueNotice(
+//                            toValidate.getRawFileInfo().getFilename(),
+//                            columnSpecProto.getName(),
+//                            toValidate.getEntityId()
+//                    ));
+//                }
+//            }
         });
 
         return toReturn;
