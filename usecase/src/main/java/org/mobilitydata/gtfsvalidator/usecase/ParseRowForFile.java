@@ -59,7 +59,7 @@ public class ParseRowForFile {
 
     public ParsedEntity getNext() {
         RawEntity rawEntity = provider.getNext();
-        //parser.validateNumericTypes(rawEntity).forEach(resultRepo::addNotice);
+        parser.validateNumericTypes(rawEntity).forEach(resultRepo::addNotice);
         return parser.parse(rawEntity);
     }
 }
